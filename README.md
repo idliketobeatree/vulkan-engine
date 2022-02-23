@@ -2,7 +2,7 @@
 
 A game engine thing using Vulkan
 
-###Libraries used:
+### Libraries used:
 - [GLFW](https://github.com/glfw/glfw)
 - [GLM](https://github.com/g-truc/glm)
 - [stb_image](https://github.com/nothings/stb)
