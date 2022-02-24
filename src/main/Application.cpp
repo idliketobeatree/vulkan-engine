@@ -42,7 +42,7 @@ void Application::initInstance() {
 		instanceExtensions.size(), instanceExtensions.data()
 	));
 
-	deletionQueue.push_back([=]() {
+	deletionQueue.push([=]() {
 		instance.destroy();
 	});
 
@@ -53,7 +53,7 @@ void Application::initWindow() {
 	window.create();
 	window.createSurface(instance);
 
-	deletionQueue.push_back([=]() {
+	deletionQueue.push([=]() {
 		window.destroy(instance);
 	});
 
@@ -137,7 +137,7 @@ void Application::initLogicalDevice() {
 
 	device.getQueue(graphicsQueueFamily, 0, &graphicsQueue);
 
-	deletionQueue.push_back([=](){
+	deletionQueue.push([=](){
 		device.destroy();
 	});
 
@@ -147,7 +147,7 @@ void Application::initMemoryAllocator() {
 	allocator = vma::createAllocator(vma::AllocatorCreateInfo(vma::AllocatorCreateFlags(),
 		physicalDevice, device, 0, nullptr, nullptr, 0, nullptr, nullptr, nullptr, instance, VK_API_VERSION_1_1
 	));
-	deletionQueue.push_back([=](){
+	deletionQueue.push([=](){
 		allocator.destroy();
 	});
 
@@ -218,7 +218,7 @@ void Application::initSwapchain() {
 	swapchainExtent = extent;
 	swapchainImages = device.getSwapchainImagesKHR(swapchain);
 
-	deletionQueue.push_back([=]() {
+	deletionQueue.push([=]() {
 		device.destroySwapchainKHR(swapchain);
 	});
 
@@ -281,7 +281,7 @@ void Application::initRenderPass() {
 			dependencies.data()
 		)
 	);
-	deletionQueue.push_back([=]() {
+	deletionQueue.push([=]() {
 		device.destroyRenderPass(renderPass);
 	});
 
@@ -321,7 +321,7 @@ void Application::initFramebuffers() {
 			)
 		);
 
-		deletionQueue.push_back([=]() {
+		deletionQueue.push([=]() {
 			device.destroyFramebuffer(swapchainFramebuffers[i]);
 			device.destroyImageView(swapchainImageViews[i]);
 		});
@@ -342,7 +342,7 @@ void Application::initFrames() {
 		frames[i].presentSemaphore = device.createSemaphore(vk::SemaphoreCreateInfo(vk::SemaphoreCreateFlags()));
 		frames[i].renderFence = device.createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled));
 
-		deletionQueue.push_back([=](){
+		deletionQueue.push([=](){
 			device.destroyCommandPool(frames[i].commandPool);
 
 			device.destroySemaphore(frames[i].presentSemaphore);
@@ -378,7 +378,7 @@ void Application::initVertexArray() {
 	memcpy(data, triangleVertices.data(), triangleVertices.size() * sizeof(Vertex));
 	allocator.unmapMemory(vertexBuffer.second);
 
-	deletionQueue.push_back([=](){
+	deletionQueue.push([=](){
 		allocator.destroyBuffer(vertexBuffer.first, vertexBuffer.second);
 	});
 }
@@ -418,7 +418,7 @@ void Application::initDescriptors() {
 		device.updateDescriptorSets(1, &cameraWrite, 0, nullptr);
 	}
 
-	deletionQueue.push_back([=](){
+	deletionQueue.push([=](){
 		device.destroyDescriptorSetLayout(globalSetLayout);
 		device.destroyDescriptorPool(descriptorPool);
 
@@ -532,7 +532,7 @@ void Application::initGraphicsPipeline() {
 		-1
 	)).value;
 
-	deletionQueue.push_back([=](){
+	deletionQueue.push([=](){
 		device.destroyPipeline(pipeline);
 		device.destroyPipelineLayout(pipelineLayout);
 	});
@@ -600,8 +600,5 @@ void Application::loop() {
 };
 void Application::cleanup() {
 	device.waitIdle();
-
-	for(auto i = deletionQueue.rbegin(); i != deletionQueue.rend(); i++)
-		(*i)();
 	deletionQueue.clear();
 }

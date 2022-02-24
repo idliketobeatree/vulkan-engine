@@ -6,11 +6,10 @@
 #include <glm/glm.hpp>
 
 #include <util/Window.hpp>
+#include <util/DeletionQueue.hpp>
 
 #include <cstdio>
-#include <functional>
 #include <optional>
-#include <deque>
 #include <fstream>
 
 class Application {
@@ -92,7 +91,7 @@ public:
 
 	glm::vec3 cameraPosition;
 
-	std::deque<std::function<void()>> deletionQueue;
+	DeletionQueue deletionQueue;
 	uint64_t frame; // how many frames have been rendered so far
 	uint8_t frameOverlap;
 public:
